@@ -1,69 +1,147 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const currentUser = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
-    if (!currentUser) {
+    const todoInput = document.getElementById('todo-input');
+    const addTodoBtn = document.getElementById('add-todo');
+    const todoList = document.getElementById('todo-list');
+    const profileBtn = document.getElementById('profile-btn');
+    const profileImg = document.getElementById('profile-img');
+    const profilePopup = document.getElementById('profile-popup');
+    const profileOption = document.getElementById('profile-option');
+    const accountsOption = document.getElementById('accounts-option');
+    const logoutOption = document.getElementById('logout-option');
+    const popupOverlay = document.getElementById('popup-overlay');
+    const deletePopup = document.getElementById('delete-popup');
+    const confirmDeleteBtn = document.getElementById('confirm-delete');
+    const cancelDeleteBtn = document.getElementById('cancel-delete');
+    let selectedTodoId = null;
+
+    // Get UID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const uid = urlParams.get('uid');
+
+    if (!uid) {
         window.location.href = 'index.html';
         return;
     }
 
-    const accounts = JSON.parse(localStorage.getItem('accounts') || '{}');
-    document.getElementById('welcome').textContent = `Welcome, ${accounts[currentUser].name}`;
-    renderTodos();
+    // Load profile image from local storage
+    const storedImage = localStorage.getItem(`profile_image_${uid}`);
+    if (storedImage) {
+        profileImg.src = storedImage;
+        profileBtn.classList.add('has-image');
+    }
 
-    // Auto-save todos on input
-    document.getElementById('newTodo').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addTodo();
+    // Initialize todos for user
+    const todos = JSON.parse(localStorage.getItem(`todos_${uid}`)) || [];
+
+    // Render todos
+    function renderTodos() {
+        todoList.innerHTML = '';
+        todos.forEach((todo, index) => {
+            const todoItem = document.createElement('div');
+            todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+            todoItem.innerHTML = `
+                <input type="checkbox" ${todo.completed ? 'checked' : ''}>
+                <span>${todo.text}</span>
+                <button>Delete</button>
+            `;
+            const checkbox = todoItem.querySelector('input');
+            const deleteBtn = todoItem.querySelector('button');
+
+            checkbox.addEventListener('change', () => {
+                todos[index].completed = checkbox.checked;
+                localStorage.setItem(`todos_${uid}`, JSON.stringify(todos));
+                renderTodos();
+            });
+
+            deleteBtn.addEventListener('click', () => {
+                selectedTodoId = index;
+                popupOverlay.style.display = 'block';
+                deletePopup.style.display = 'block';
+            });
+
+            todoList.appendChild(todoItem);
+        });
+    }
+
+    // Add todo
+    function addTodo() {
+        const text = todoInput.value.trim();
+        if (text) {
+            todos.push({ text, completed: false });
+            localStorage.setItem(`todos_${uid}`, JSON.stringify(todos));
+            todoInput.value = '';
+            renderTodos();
+        }
+    }
+
+    addTodoBtn.addEventListener('click', addTodo);
+
+    // Handle Enter key for adding todo
+    todoInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
     });
+
+    // Handle delete confirmation
+    confirmDeleteBtn.addEventListener('click', () => {
+        if (selectedTodoId !== null) {
+            todos.splice(selectedTodoId, 1);
+            localStorage.setItem(`todos_${uid}`, JSON.stringify(todos));
+            renderTodos();
+            closeDeletePopup();
+        }
+    });
+
+    cancelDeleteBtn.addEventListener('click', closeDeletePopup);
+
+    // Handle Enter and Esc keys for delete popup
+    document.addEventListener('keydown', (e) => {
+        if (deletePopup.style.display === 'block') {
+            if (e.key === 'Enter') {
+                confirmDeleteBtn.click();
+            } else if (e.key === 'Escape') {
+                cancelDeleteBtn.click();
+            }
+        }
+    });
+
+    function closeDeletePopup() {
+        popupOverlay.style.display = 'none';
+        deletePopup.style.display = 'none';
+        selectedTodoId = null;
+    }
+
+    // Profile popup handling
+    profileBtn.addEventListener('click', () => {
+        profilePopup.style.display = profilePopup.style.display === 'block' ? 'none' : 'block';
+    });
+
+    profileOption.addEventListener('click', () => {
+        window.location.href = `profile.html?uid=${uid}`;
+    });
+
+    accountsOption.addEventListener('click', () => {
+        localStorage.setItem('lastOpenedAccount', 'accountspage');
+        window.location.href = 'index.html';
+    });
+
+    logoutOption.addEventListener('click', () => {
+        const rememberMeData = JSON.parse(localStorage.getItem('rememberMe')) || {};
+        if (rememberMeData[uid]) {
+            rememberMeData[uid] = false;
+            localStorage.setItem('rememberMe', JSON.stringify(rememberMeData));
+        }
+        localStorage.setItem('lastOpenedAccount', 'accountspage');
+        window.location.href = 'index.html';
+    });
+
+    // Close popup when clicking overlay
+    popupOverlay.addEventListener('click', () => {
+        profilePopup.style.display = 'none';
+        closeDeletePopup();
+    });
+
+    // Initial render
+    renderTodos();
 });
-
-function addTodo() {
-    const input = document.getElementById('newTodo');
-    const task = input.value.trim();
-    if (!task) return;
-
-    const currentUser = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
-    const accounts = JSON.parse(localStorage.getItem('accounts') || '{}');
-    accounts[currentUser].todos.push({ task, completed: false });
-    localStorage.setItem('accounts', JSON.stringify(accounts));
-    input.value = '';
-    renderTodos();
-}
-
-function toggleTodo(index) {
-    const currentUser = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
-    const accounts = JSON.parse(localStorage.getItem('accounts') || '{}');
-    accounts[currentUser].todos[index].completed = !accounts[currentUser].todos[index].completed;
-    localStorage.setItem('accounts', JSON.stringify(accounts));
-    renderTodos();
-}
-
-function deleteTodo(index) {
-    const currentUser = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
-    const accounts = JSON.parse(localStorage.getItem('accounts') || '{}');
-    accounts[currentUser].todos.splice(index, 1);
-    localStorage.setItem('accounts', JSON.stringify(accounts));
-    renderTodos();
-}
-
-function renderTodos() {
-    const currentUser = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
-    const accounts = JSON.parse(localStorage.getItem('accounts') || '{}');
-    const todoList = document.getElementById('todoList');
-    todoList.innerHTML = '';
-
-    accounts[currentUser].todos.forEach((todo, index) => {
-        const todoDiv = document.createElement('div');
-        todoDiv.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-        todoDiv.innerHTML = `
-            <input type="checkbox" ${todo.completed ? 'checked' : ''} onclick="toggleTodo(${index})">
-            <span>${todo.task}</span>
-            <button onclick="deleteTodo(${index})">Delete</button>
-        `;
-        todoList.appendChild(todoDiv);
-    });
-}
-
-function logout() {
-    sessionStorage.removeItem('currentUser');
-    localStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
-}

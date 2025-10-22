@@ -3,94 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do App - Accounts</title>
+    <title>To-Do List - Accounts</title>
     <style>
-        body {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            padding: 20px;
         }
+
         .container {
-            background-color: #2a2a2a;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
             width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        h1 {
-            margin-bottom: 1.5rem;
-            color: #ffffff;
-        }
-        .account-list {
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-        }
-        .account-item {
-            background-color: #3a3a3a;
-            padding: 1rem;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
         }
-        .account-item input {
-            background-color: #4a4a4a;
-            border: none;
-            padding: 0.5rem;
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
             color: #e0e0e0;
-            border-radius: 5px;
         }
-        .account-item button {
-            background-color: #6200ea;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
+
+        .account {
+            background-color: #3a3a3a;
+            padding: 15px;
+            margin-bottom: 15px;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .account-item button:hover {
-            background-color: #7f39fb;
-        }
-        .keep-signed-in {
-            margin: 1rem 0;
+            transition: background-color 0.2s;
+            height: 50px;
+            width: 200px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 10px;
+            position: relative;
         }
-        .signup-btn {
-            margin-top: 1rem;
-            background-color: #03a9f4;
-            color: white;
-            padding: 0.5rem 1rem;
+
+        .account:hover {
+            background-color: #4a4a4a;
+        }
+
+        .account-image {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #3a3a3a;
+        }
+
+        .account-svg {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #3a3a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .account-svg svg {
+            width: 20px;
+            height: 20px;
+            fill: #e0e0e0;
+        }
+
+        .account span {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .delete-account-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .account:hover .delete-account-btn {
+            opacity: 1;
+        }
+
+        .delete-account-btn:hover {
+            background-color: #808080;
+            border-radius: 50%;
+        }
+
+        .delete-account-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: #e0e0e0;
+        }
+
+        .create-account {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .create-account a {
+            color: #808080;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .create-account a:hover {
+            text-decoration: underline;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            z-index: 1001;
+            display: none;
+        }
+
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
             border: none;
             border-radius: 5px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+        }
+
+        .popup input:focus {
+            outline: 2px solid #808080;
+        }
+
+        .popup button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #808080;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .popup button:hover {
+            background-color: #6b6b6b;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .checkbox-group label {
+            margin-left: 10px;
+            margin-bottom: 13px;
+            color: #cccccc;
             cursor: pointer;
         }
-        .signup-btn:hover {
-            background-color: #0288d1;
+
+        .checkbox-group input[type="checkbox"] {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background-color: #3a3a3a;
+            border: 2px solid #808080;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
         }
-        .error {
-            color: #ff6b6b;
-            margin-top: 1rem;
+
+        .checkbox-group input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: #ffffff;
+            font-size: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .warning {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1002;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Accounts</h1>
-        <div class="account-list" id="accountList"></div>
-        <button class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
-        <div id="error" class="error"></div>
+        <h1>To-Do List Accounts</h1>
+        <div id="accounts-list">
+            <!-- Accounts will be populated here -->
+        </div>
+        <div class="create-account">
+            <a href="signup.html">Create New Account</a>
+        </div>
     </div>
+    <div class="popup-overlay" id="popup-overlay"></div>
+    <div class="popup" id="password-popup">
+        <input type="password" id="password-input" placeholder="Enter Password">
+        <div class="checkbox-group" id="remember-me-group">
+            <input type="checkbox" id="remember-me">
+            <label for="remember-me">Remember Me</label>
+        </div>
+        <button id="submit-password">Login</button>
+    </div>
+    <div class="popup" id="delete-account-popup">
+        <p>Enter password to delete this account</p>
+        <input type="password" id="delete-password-input" placeholder="Enter Password">
+        <button id="confirm-delete-account">Delete</button>
+    </div>
+    <div class="warning" id="warning-message"></div>
     <script src="index.js"></script>
 </body>
 </html>
