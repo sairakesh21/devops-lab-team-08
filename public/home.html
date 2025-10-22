@@ -3,99 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <title>To-Do List - Home</title>
     <style>
-        body {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * {
             margin: 0;
-            padding: 2rem;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        body {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             background-color: #2a2a2a;
-            padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
+
         h1 {
             text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #e0e0e0;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            background-color: #3a3a3a;
             color: #ffffff;
         }
-        .header {
+
+        .input-group input:focus {
+            outline: 2px solid #808080;
+        }
+
+        .input-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            background-color: #808080;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .input-group button:hover {
+            background-color: #6b6b6b;
+        }
+
+        .todo-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            background-color: #3a3a3a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
         }
-        .add-todo {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        input {
-            flex-grow: 1;
-            padding: 0.5rem;
+
+        .todo-item:hover {
             background-color: #4a4a4a;
-            border: none;
-            color: #e0e0e0;
-            border-radius: 5px;
         }
-        button {
-            background-color: #6200ea;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+
+        .todo-item.completed span {
+            text-decoration: line-through;
+            color: #808080;
+        }
+
+        .todo-item input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background-color: #3a3a3a;
+            border: 2px solid #808080;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            position: relative;
         }
-        button:hover {
-            background-color: #7f39fb;
+
+        .todo-item input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: #ffffff;
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
-        .todo-item {
+
+        .todo-item button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #808080;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .todo-item button:hover {
+            background-color: #6b6b6b;
+        }
+
+        .profile-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #808080;
+            background-color: #3a3a3a;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            background-color: #3a3a3a;
-            padding: 1rem;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .profile-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #e0e0e0;
+        }
+
+        .profile-btn.has-image svg {
+            display: none;
+        }
+
+        .profile-btn.has-image img {
+            display: block;
+        }
+
+        .profile-popup {
+            display: none;
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background-color: #2a2a2a;
             border-radius: 5px;
-            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
         }
-        .todo-item.completed {
-            background-color: #2e7d32;
-            text-decoration: line-through;
+
+        .profile-popup div {
+            padding: 10px 20px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
-        .profile-btn {
-            background-color: #03a9f4;
+
+        .profile-popup div:hover {
+            background-color: #4a4a4a;
         }
-        .profile-btn:hover {
-            background-color: #0288d1;
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
         }
-        .logout-btn {
-            background-color: #d32f2f;
+
+        .delete-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            z-index: 1001;
+            display: none;
         }
-        .logout-btn:hover {
-            background-color: #b71c1c;
+
+        .delete-popup p {
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+
+        .delete-popup button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .delete-popup button:first-child {
+            background-color: #808080;
+            margin-right: 4%;
+        }
+
+        .delete-popup button:first-child:hover {
+            background-color: #6b6b6b;
+        }
+
+        .delete-popup button:last-child {
+            background-color: #808080;
+        }
+
+        .delete-popup button:last-child:hover {
+            background-color: #6b6b6b;
         }
     </style>
 </head>
 <body>
+    <div class="profile-btn" id="profile-btn">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <img src="" alt="Profile" id="profile-img">
+    </div>
+    <div class="profile-popup" id="profile-popup">
+        <div id="profile-option">Profile</div>
+        <div id="accounts-option">Go to Accounts</div>
+        <div id="logout-option">Logout</div>
+    </div>
     <div class="container">
-        <div class="header">
-            <h1 id="welcome">To-Do List</h1>
-            <div>
-                <button class="profile-btn" onclick="window.location.href='profile.html'">Profile</button>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
+        <h1>To-Do List</h1>
+        <div class="input-group">
+            <input type="text" id="todo-input" placeholder="Add a new task">
+            <button id="add-todo">Add</button>
         </div>
-        <div class="add-todo">
-            <input type="text" id="newTodo" placeholder="Add new task...">
-            <button onclick="addTodo()">+</button>
-        </div>
-        <div id="todoList"></div>
+        <div id="todo-list"></div>
+    </div>
+    <div class="popup-overlay" id="popup-overlay"></div>
+    <div class="delete-popup" id="delete-popup">
+        <p>Are you sure you want to delete this task?</p>
+        <button id="confirm-delete">Yes</button>
+        <button id="cancel-delete">No</button>
     </div>
     <script src="home.js"></script>
 </body>
