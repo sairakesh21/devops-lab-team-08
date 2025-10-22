@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do App - Accounts</title>
+    <title>Profile</title>
     <style>
         body {
             background-color: #1a1a1a;
@@ -22,75 +22,64 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             width: 100%;
             max-width: 400px;
-            text-align: center;
         }
         h1 {
-            margin-bottom: 1.5rem;
+            text-align: center;
             color: #ffffff;
+            margin-bottom: 1.5rem;
         }
-        .account-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .account-item {
-            background-color: #3a3a3a;
-            padding: 1rem;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .account-item input {
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
             background-color: #4a4a4a;
             border: none;
-            padding: 0.5rem;
             color: #e0e0e0;
             border-radius: 5px;
         }
-        .account-item button {
+        button {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
             background-color: #6200ea;
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .account-item button:hover {
+        button:hover {
             background-color: #7f39fb;
         }
-        .keep-signed-in {
-            margin: 1rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .signup-btn {
-            margin-top: 1rem;
+        .back-btn {
             background-color: #03a9f4;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
-        .signup-btn:hover {
+        .back-btn:hover {
             background-color: #0288d1;
+        }
+        .delete-btn {
+            background-color: #d32f2f;
+        }
+        .delete-btn:hover {
+            background-color: #b71c1c;
         }
         .error {
             color: #ff6b6b;
+            text-align: center;
             margin-top: 1rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Accounts</h1>
-        <div class="account-list" id="accountList"></div>
-        <button class="signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
+        <h1>Profile</h1>
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="password" id="password" placeholder="New Password">
+        <button onclick="updateProfile()">Update Profile</button>
+        <button class="delete-btn" onclick="deleteAccount()">Delete Account</button>
+        <button class="back-btn" onclick="window.location.href='home.html'">Back to Home</button>
         <div id="error" class="error"></div>
     </div>
-    <script src="index.js"></script>
+    <script src="profile.js"></script>
 </body>
 </html>
