@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Select Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a24;
+            --bg-elevated: #24243a;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --error: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0f;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        .bg-orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+        }
+
+        .bg-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: 7s;
+        }
+
+        .bg-orb-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            animation-delay: 14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(20px, 30px) scale(1.05); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 48px;
+            background: rgba(26, 26, 36, 0.6);
+            backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+            margin: auto;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+            animation: pulse-glow 3s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 16px 48px rgba(99, 102, 241, 0.8); }
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        #accounts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 32px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        #accounts-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #accounts-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        #accounts-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .account {
+            background: rgba(36, 36, 58, 0.6);
+            backdrop-filter: blur(20px);
+            padding: 20px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .account::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .account:hover::before {
+            transform: scaleY(1);
+        }
+
+        .account:hover {
+            transform: translateX(8px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.3);
+        }
+
+        .account-image {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+            flex-shrink: 0;
+        }
+
+        .account-svg {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+            flex-shrink: 0;
+        }
+
+        .account-svg svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .account-name {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .delete-account-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .account:hover .delete-account-btn {
+            opacity: 1;
+        }
+
+        .delete-account-btn:hover {
+            background: var(--error);
+            color: white;
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .add-account-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            border-radius: 18px;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-account-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .add-account-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .add-account-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(99, 102, 241, 0.5);
+        }
+
+        .add-account-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-account-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Modals */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(26, 26, 36, 0.95);
+            backdrop-filter: blur(30px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            min-width: 400px;
+            max-width: 90%;
+            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .popup h2 {
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .popup p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .popup input[type="password"] {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(36, 36, 58, 0.8);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .popup input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(36, 36, 58, 1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .remember-me label {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .popup button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .popup button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+        }
+
+        .popup .cancel-btn {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+
+        .popup .cancel-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: none;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%) !important;
+        }
+
+        .delete-btn:hover {
+            box-shadow: 0 12px 32px rgba(239, 68, 68, 0.5) !important;
+        }
+
+        #warning-message {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 18px;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            border-radius: 10px;
+            color: var(--error);
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .logo-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+
+            .popup {
+                min-width: auto;
+                width: 90%;
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="logo-icon">✓</div>
+            <h1>TaskFlow</h1>
+            <p class="subtitle">Select your account to continue</p>
+        </div>
+
+        <div id="accounts-list"></div>
+
+        <button class="add-account-btn" onclick="window.location.href='signup.html'">
+            <span>+ Create New Account</span>
+        </button>
+    </div>
+
+    <div class="popup-overlay" id="popup-overlay"></div>
+
+    <div class="popup" id="password-popup">
+        <h2>Welcome Back</h2>
+        <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password">
+        <div class="remember-me">
+            <input type="checkbox" id="remember-me">
+            <label for="remember-me">Remember me on this device</label>
+        </div>
+        <button id="submit-password">Sign In</button>
+        <button class="cancel-btn" onclick="document.getElementById('popup-overlay').style.display='none'; document.getElementById('password-popup').style.display='none';">Cancel</button>
+    </div>
+
+    <div class="popup" id="delete-account-popup">
+        <h2>Delete Account</h2>
+        <p>⚠️ This action cannot be undone. All tasks will be permanently deleted.</p>
+        <input type="password" id="delete-password-input" placeholder="Enter your password" autocomplete="current-password">
+        <button class="delete-btn" id="confirm-delete-account">Delete Permanently</button>
+        <button class="cancel-btn" onclick="document.getElementById('popup-overlay').style.display='none'; document.getElementById('delete-account-popup').style.display='none';">Cancel</button>
+        <div id="warning-message"></div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
