@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow  Select Account</title>
+    <title>TaskFlow - Select Account</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -560,6 +560,10 @@
     <div class="popup" id="password-popup">
         <h2>Welcome Back</h2>
         <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password">
+        <div class="remember-me">
+            <input type="checkbox" id="remember-me">
+            <label for="remember-me">Remember me on this device</label>
+        </div>
         <button id="submit-password">Sign In</button>
         <button class="cancel-btn" onclick="document.getElementById('popup-overlay').style.display='none'; document.getElementById('password-popup').style.display='none';">Cancel</button>
     </div>
