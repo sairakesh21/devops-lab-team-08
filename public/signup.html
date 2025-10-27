@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow Create Account</title>
+    <title>TaskFlow - Select Account</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -45,6 +45,7 @@
             overflow-y: auto;
         }
 
+        /* Animated background */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -68,7 +69,7 @@
             height: 500px;
             background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
             top: -200px;
-            left: -100px;
+            right: -100px;
         }
 
         .bg-orb-2 {
@@ -76,7 +77,7 @@
             height: 400px;
             background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
             bottom: -150px;
-            right: -100px;
+            left: -100px;
             animation-delay: 7s;
         }
 
@@ -107,8 +108,19 @@
             }
         }
 
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         .container {
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             padding: 48px;
             background: rgba(26, 26, 36, 0.6);
@@ -163,21 +175,232 @@
             font-weight: 500;
         }
 
-        .form-group {
-            margin-bottom: 24px;
+        #accounts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 32px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
+        #accounts-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #accounts-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        #accounts-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .account {
+            background: rgba(36, 36, 58, 0.6);
+            backdrop-filter: blur(20px);
+            padding: 20px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .account::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .account:hover::before {
+            transform: scaleY(1);
+        }
+
+        .account:hover {
+            transform: translateX(8px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.3);
+        }
+
+        .account-image {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+            flex-shrink: 0;
+        }
+
+        .account-svg {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+            flex-shrink: 0;
+        }
+
+        .account-svg svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .account-name {
+            flex: 1;
+            font-size: 18px;
             font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--text-primary);
         }
 
-        .form-group input {
+        .delete-account-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .account:hover .delete-account-btn {
+            opacity: 1;
+        }
+
+        .delete-account-btn:hover {
+            background: var(--error);
+            color: white;
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .add-account-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            border-radius: 18px;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-account-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .add-account-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .add-account-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(99, 102, 241, 0.5);
+        }
+
+        .add-account-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-account-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Modals */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(26, 26, 36, 0.95);
+            backdrop-filter: blur(30px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            min-width: 400px;
+            max-width: 90%;
+            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .popup h2 {
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .popup p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .popup input[type="password"] {
             width: 100%;
             padding: 16px 20px;
             background: rgba(36, 36, 58, 0.8);
@@ -185,28 +408,23 @@
             border-radius: 14px;
             color: var(--text-primary);
             font-size: 16px;
+            margin-bottom: 20px;
             transition: all 0.3s ease;
             font-family: inherit;
         }
 
-        .form-group input:focus {
+        .popup input[type="password"]:focus {
             outline: none;
             border-color: var(--primary);
             background: rgba(36, 36, 58, 1);
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .form-group input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.5;
         }
 
         .remember-me {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
 
         .remember-me input[type="checkbox"] {
@@ -223,74 +441,51 @@
             cursor: pointer;
         }
 
-        button[type="submit"] {
+        .popup button {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             border: none;
-            border-radius: 18px;
+            border-radius: 14px;
             color: white;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
         }
 
-        button[type="submit"]::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        button[type="submit"]:hover::before {
-            width: 400px;
-            height: 400px;
-        }
-
-        button[type="submit"]:hover {
+        .popup button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 40px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
         }
 
-        button[type="submit"]:active {
-            transform: translateY(0);
+        .popup .cancel-btn {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+            box-shadow: none;
         }
 
-        button[type="submit"] span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .back-link {
-            text-align: center;
-            margin-top: 24px;
-        }
-
-        .back-link a {
+        .popup .cancel-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
             color: var(--primary);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            box-shadow: none;
         }
 
-        .back-link a:hover {
-            color: var(--secondary);
+        .delete-btn {
+            background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%) !important;
+        }
+
+        .delete-btn:hover {
+            box-shadow: 0 12px 32px rgba(239, 68, 68, 0.5) !important;
         }
 
         #warning-message {
             display: none;
-            margin-top: 20px;
+            margin-top: 16px;
             padding: 14px 18px;
             background: rgba(239, 68, 68, 0.1);
             border-left: 4px solid var(--error);
@@ -330,6 +525,12 @@
                 height: 60px;
                 font-size: 30px;
             }
+
+            .popup {
+                min-width: auto;
+                width: 90%;
+                padding: 32px 24px;
+            }
         }
     </style>
 </head>
@@ -343,39 +544,39 @@
     <div class="container">
         <div class="header-section">
             <div class="logo-icon">✓</div>
-            <h1>Create Account</h1>
-            <p class="subtitle">Start organizing your tasks today</p>
+            <h1>TaskFlow</h1>
+            <p class="subtitle">Select your account to continue</p>
         </div>
 
-        <form id="signup-form">
-            <div class="form-group">
-                <label for="userid">User ID</label>
-                <input type="text" id="userid" placeholder="Choose a unique username" autocomplete="off" required>
-            </div>
+        <div id="accounts-list"></div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password" required>
-            </div>
-
-            <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
-                <input type="password" id="confirm-password" placeholder="Re-enter your password" autocomplete="new-password" required>
-            </div>
-
-
-            <button type="submit">
-                <span>Create Account</span>
-            </button>
-
-            <div id="warning-message"></div>
-        </form>
-
-        <div class="back-link">
-            <a href="index.html">← Back to accounts</a>
-        </div>
+        <button class="add-account-btn" onclick="window.location.href='signup.html'">
+            <span>+ Create New Account</span>
+        </button>
     </div>
 
-    <script src="signup.js"></script>
+    <div class="popup-overlay" id="popup-overlay"></div>
+
+    <div class="popup" id="password-popup">
+        <h2>Welcome Back</h2>
+        <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password">
+        <div class="remember-me">
+            <input type="checkbox" id="remember-me">
+            <label for="remember-me">Remember me on this device</label>
+        </div>
+        <button id="submit-password">Sign In</button>
+        <button class="cancel-btn" onclick="document.getElementById('popup-overlay').style.display='none'; document.getElementById('password-popup').style.display='none';">Cancel</button>
+    </div>
+
+    <div class="popup" id="delete-account-popup">
+        <h2>Delete Account</h2>
+        <p>⚠️ This action cannot be undone. All tasks will be permanently deleted.</p>
+        <input type="password" id="delete-password-input" placeholder="Enter your password" autocomplete="current-password">
+        <button class="delete-btn" id="confirm-delete-account">Delete Permanently</button>
+        <button class="cancel-btn" onclick="document.getElementById('popup-overlay').style.display='none'; document.getElementById('delete-account-popup').style.display='none';">Cancel</button>
+        <div id="warning-message"></div>
+    </div>
+
+    <script src="index.js"></script>
 </body>
 </html>
